@@ -60,17 +60,17 @@ export function Console({ output, userTimezone }: ConsoleProps) {
   }, [output])
   return (
     <div className="flex flex-col h-full bg-card">
-      <div className="px-4 py-2 border-b border-border">
-        <h3 className="text-sm font-semibold">Console</h3>
+      <div className="px-3 sm:px-4 py-1.5 sm:py-2 border-b border-border">
+        <h3 className="text-xs sm:text-sm font-semibold">Console</h3>
       </div>
 
       <ScrollArea className="flex-1 overflow-y-auto" ref={scrollAreaRef}>
-        <div className="p-4 space-y-3 pr-6" ref={contentRef}>
+        <div className="p-2 sm:p-4 space-y-2 sm:space-y-3 pr-3 sm:pr-6" ref={contentRef}>
           {output.length === 0 ? (
             <div className="text-muted-foreground text-sm">No output yet. Run compile or deploy to see results.</div>
           ) : (
             output.map((item, index) => (
-              <div key={index} className="flex gap-2 text-sm">
+              <div key={index} className="flex gap-1.5 sm:gap-2 text-xs sm:text-sm">
                 {item.type === "bytecode" ? (
                   // Bytecode output block
                   <div className="w-full">
@@ -93,9 +93,9 @@ export function Console({ output, userTimezone }: ConsoleProps) {
                   // Regular log entries
                   <>
                     <div className="flex-shrink-0 mt-0.5">
-                      {item.type === "error" && <AlertCircle className="w-4 h-4 text-destructive" />}
-                      {item.type === "success" && <CheckCircle className="w-4 h-4 text-success" />}
-                      {item.type === "info" && <Info className="w-4 h-4 text-primary" />}
+                      {item.type === "error" && <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-destructive" />}
+                      {item.type === "success" && <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-success" />}
+                      {item.type === "info" && <Info className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p

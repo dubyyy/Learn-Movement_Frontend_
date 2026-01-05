@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import React from "react"
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels"
 import { useWallet } from "@/components/wallet-provider"
@@ -54,6 +54,19 @@ export default function Home() {
 
   const walletAddress = address ?? null
   const isConnected = connected
+
+  // Responsive: detect mobile screen
+  const [isMobile, setIsMobile] = useState(false)
+
+  const checkMobile = useCallback(() => {
+    setIsMobile(window.innerWidth < 768)
+  }, [])
+
+  useEffect(() => {
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [checkMobile])
 
   // Fetch timezone on mount
   useEffect(() => {
@@ -296,12 +309,12 @@ export default function Home() {
         />
 
       <div className="flex flex-1 overflow-hidden">
-        <PanelGroup direction="horizontal">
-          <Panel defaultSize={65} minSize={30}>
+        <PanelGroup direction={isMobile ? "vertical" : "horizontal"}>
+          <Panel defaultSize={isMobile ? 50 : 65} minSize={isMobile ? 20 : 30}>
             <CodeEditor code={code} onChange={setCode} />
           </Panel>
-          <PanelResizeHandle className="w-1 bg-border hover:bg-primary transition-colors" />
-          <Panel defaultSize={35} minSize={25}>
+          <PanelResizeHandle className={isMobile ? "h-1 w-full bg-border hover:bg-primary transition-colors" : "w-1 bg-border hover:bg-primary transition-colors"} />
+          <Panel defaultSize={isMobile ? 50 : 35} minSize={isMobile ? 20 : 25}>
             <Console output={consoleOutput} userTimezone={userTimezone} />
           </Panel>
         </PanelGroup>
