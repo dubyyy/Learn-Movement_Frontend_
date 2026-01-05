@@ -1,3 +1,5 @@
+import { decodeProtobufMessage, extractTextFromBase64 } from "./encoding"
+
 export async function fetchUserTimezone(): Promise<string> {
   try {
     const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(5000) })
@@ -59,4 +61,35 @@ export async function compileCode(code: string, senderAddress?: string, timeoutM
   } finally {
     clearTimeout(id)
   }
+}
+
+/**
+ * Decode a Base64-encoded protobuf response and extract the text field.
+ * Use this when the API returns a protobuf Message with a text field.
+ * @param base64Response - The Base64 encoded protobuf string from the API
+ * @returns The decoded text string from the Message.text field
+ */
+export async function decodeCompileResponse(base64Response: string): Promise<string> {
+  try {
+    // First try standard protobuf decoding for simple Message { text: string }
+    return await decodeProtobufMessage(base64Response)
+  } catch {
+    // Fallback: extract embedded text from complex protobuf structures
+    const extracted = extractTextFromBase64(base64Response)
+    if (extracted) return extracted
+    throw new Error("Failed to decode protobuf message")
+  }
+}
+
+/**
+ * Compile code and decode the protobuf response to extract the text field.
+ * @param code - The code to compile
+ * @param senderAddress - Optional sender address
+ * @param timeoutMs - Request timeout in milliseconds
+ * @returns The decoded text from the protobuf response
+ */
+export async function compileAndDecode(code: string, senderAddress?: string, timeoutMs = 60000): Promise<string> {
+  const response = await compileCode(code, senderAddress, timeoutMs)
+  const base64String = typeof response === "string" ? response : JSON.stringify(response)
+  return decodeCompileResponse(base64String)
 }

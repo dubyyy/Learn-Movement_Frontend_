@@ -3,7 +3,23 @@
 import { AlertCircle, CheckCircle, Info } from "lucide-react"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { formatTimestampInTimezone } from "@/lib/api"
-import { useEffect, useRef } from "react"
+import { extractTextFromBase64 } from "@/lib/encoding"
+import { useEffect, useRef, useState } from "react"
+
+function DecodedBytecode({ base64 }: { base64: string }) {
+  const [decoded, setDecoded] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!base64) return
+    const text = extractTextFromBase64(base64)
+    setDecoded(text)
+  }, [base64])
+
+  if (decoded) {
+    return <>{decoded}</>
+  }
+  return <>{base64}</>
+}
 
 interface ConsoleOutput {
   type: "info" | "error" | "success" | "bytecode"
@@ -81,7 +97,7 @@ export function Console({ output, userTimezone }: ConsoleProps) {
                         <div key={midx} className="mb-2">
                           <div className="text-xs font-medium break-words">{m.name ?? `module_${midx}`}</div>
                           <div className="mt-1 p-2 bg-[#0b0b0b] text-xs font-mono text-muted-foreground break-all rounded">
-                            {m.bytecode_base64 ?? ''}
+                            <DecodedBytecode base64={m.bytecode_base64 ?? ''} />
                           </div>
                         </div>
                       ))
