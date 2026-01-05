@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ConnectButton } from "@razorlabs/razorkit"
+import { ConnectButton } from "@/components/wallet-provider"
 import { CheckCircle2, Copy, XCircle } from "lucide-react"
 
 

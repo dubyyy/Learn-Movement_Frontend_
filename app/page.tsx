@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import React from "react"
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels"
-import { useWallet, ConnectButton } from "@razorlabs/razorkit"
+import { useWallet } from "@/components/wallet-provider"
 import { CodeEditor } from "@/components/code-editor"
 import { Console } from "@/components/console"
 import { Toolbar } from "@/components/toolbar"

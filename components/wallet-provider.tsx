@@ -1,23 +1,41 @@
 "use client"
 
-import { WalletProvider as RazorWalletProvider } from "@razorlabs/razorkit"
-import "@razorlabs/razorkit/style.css"
-import { PropsWithChildren, useState, useEffect } from "react"
+import dynamic from "next/dynamic"
+import { PropsWithChildren, createContext, useContext } from "react"
+
+const RazorWalletProvider = dynamic(
+  () => import("@razorlabs/razorkit").then((mod) => {
+    require("@razorlabs/razorkit/style.css")
+    return mod.WalletProvider
+  }),
+  { ssr: false }
+)
 
 export function WalletProvider({ children }: PropsWithChildren) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return <>{children}</>
-  }
-
   return (
     <RazorWalletProvider>
       {children}
     </RazorWalletProvider>
   )
 }
+
+// Re-export hooks and components with dynamic loading for SSR safety
+export const useWallet = () => {
+  // Return empty wallet state during SSR
+  if (typeof window === "undefined") {
+    return {
+      address: null,
+      connected: false,
+      disconnect: async () => {},
+      signAndSubmitTransaction: async () => ({}),
+    }
+  }
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const razorkit = require("@razorlabs/razorkit")
+  return razorkit.useWallet()
+}
+
+export const ConnectButton = dynamic(
+  () => import("@razorlabs/razorkit").then((mod) => mod.ConnectButton),
+  { ssr: false }
+)
